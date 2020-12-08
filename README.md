@@ -61,3 +61,103 @@ Exemplo de violação ilustrado anteriormente em algumas imagens acima.
 - Falta de coesão (Você não entenderá qual o princípio / objetivo daquela classe em questão).
 
 - Auto-Acoplamento (Você irá ter tudo sobre o usuário, junto ali no mesmo lugar. Você terá que puxar toda a classe, um exemplo, você quer apenas criar um usuário, definir nome, idade, etc... e recuperar estes dados, junto a isso você irá trazer todos os métodos de manipulação de dados. O código tenderá a ficar cada vez mais bagunçado).
+
+## O
+
+> Objetos, classes, entidades, etc... DEVEM estar abertos para extensão mas fechadas para modificação.
+
+Ou seja, possível de se extender, de inserir novas funcionalidades.
+
+> Exemplo na prática, SEM o princípio Open-Closed:
+
+```php
+class ContratoClt
+{
+    public function calcularSalario () {}
+}
+
+class Estagio
+{
+    public function bolsaAuxilio () {}
+}
+
+class ContratoPj
+{
+    public function calcularPagamento () {}
+}
+
+class FolhaDePagamento
+{
+    public function calcular ($funcionario)
+    {
+
+        $salario = 0;
+
+        if ($funcionario instanceof ContratoClt)
+        {
+            $salario = $funcionario->calcularSalario();
+        }
+        else if ($funcionario instanceof Estagio)
+        {
+            $salario = $funcionario->bolsaAuxilio();
+        }
+        else if ($funcionario instanceof ContratoPj)
+        {
+            $salario = $funcionario->calcularPagamento();
+        }
+        return $salario;
+    }
+}
+```
+
+O exemplo acima, viola o princípio de Open-Closed, cada vez que surgir um novo tipo de contrato, teriamos que modificar a classe FolhaDePagamento, violando o fechado para modificação do princípio.
+Se temos uma situação como essa, não vamos modificar a classe para adicionar uma funcionalidade, e sim extender essa classe.
+
+> A solução seria utilizar uma Interface, para realizar este "contrato", de certo modo, onde ela diz o que precisa ser implementado, para implementar tal funcionalidade.
+
+Exemplo com a interface, mantendo o princípio:
+
+```php
+interface Remuneravel
+{
+    public function remuneracao ();
+}
+```
+
+Toda classe que implementar essa Interface, terá que ter, obrigatoriamente, esse método.
+
+```php
+class ContratoClt implements Remuneravel
+{
+    public function remuneracao () {}
+}
+
+class Estagio implements Remuneravel
+{
+    public function remuneracao () {}
+}
+
+class ContratoPj implements Remuneravel
+{
+    public function remuneracao () {}
+}
+
+class FolhaDePagamento
+{
+    public function calcular (Remuneravel $funcionario)
+    {
+        return $funcionario->remuneracao();
+    }
+}
+```
+
+E se quisermos adicionar um novo tipo de contrato, nós EXTENDEMOS a funcionalidade e não alteramos nada na classe de pagamento e nem na interface.
+
+> Exemplo:
+
+```php
+class ContratoInternacional implements Remuneravel
+{
+    public function remuneracao () {}
+}
+```
