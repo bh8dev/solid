@@ -161,3 +161,64 @@ class ContratoInternacional implements Remuneravel
     public function remuneracao () {}
 }
 ```
+
+## L
+
+> "Se para cada objeto O1 do tipo S existe um objeto O2 do tipo T, tal que, para todos os programas P definidos em termos de T, o comportamento de P fica inalterado quando O1 é substituído por O2, então S é um subtipo de T.”
+
+Em outras palavras, um objeto que utilize uma classe base deve continuar a funcionar corretamente quando um objeto derivado dessa classe base for passado para ele.
+
+Ou, basicamente, LISKOV (1988) está dizendo que se uma classe S herda de uma classe T, então a classe S deve se comportar igual a classe T.
+
+Ou seja, a T é a classe base e ela deve responder por todas as classes filhas dela, inclusive a S.
+
+## Exemplo na prática
+
+```php
+class A
+{
+    public function getNome ()
+    {
+        return 'Meu nome é A';
+    }
+}
+
+class B extends A
+{
+    public function getNome ()
+    {
+        return 'Meu nome é B';
+    }
+}
+
+function imprimeNome (A $objeto) // injeção de independência
+{
+    return $objeto->getNome();
+}
+
+$objeto1 = new A();
+$objeto2 = new B();
+echo imprimeNome($objeto1) . '<br/>';
+echo imprimeNome($objeto2);
+```
+
+> Resultado ao executar este código:
+
+Meu nome é A
+
+Meu nome é B
+
+## Situação onde o princípio seria violado
+
+Se mudassemos o retorno do método **getNome()** da Classe B, para 30, ele não retornaria mais uma string, que é o original de seu Pai (A), e sim um inteiro.
+Ao realizar esta alteração, nós mudamos o objetivo desse método. Ele funcionar normalemnte, contudo, nós violamos o princípio ao realizar tal alteração.
+
+```php
+class B extends A
+{
+    public function getNome ()
+    {
+        return 30;
+    }
+}
+```
