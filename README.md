@@ -239,7 +239,7 @@ interface IAves
     public function render ();
 }
 
-class Papagaio implements Aves
+class Papagaio implements IAves
 {
     public function setLocation ($latitude, $longitude)
     {
@@ -257,7 +257,7 @@ class Papagaio implements Aves
     }
 }
 
-class Pinguim implements Aves
+class Pinguim implements IAves
 {
     public function setLocation ($latitude, $longitude)
     {
