@@ -222,3 +222,108 @@ class B extends A
     }
 }
 ```
+
+## I
+
+> o princípio de segregação da interface afirma que nenhum cliente deve ser forçado a depender dos métodos que não usa.
+
+Simplificando: interfaces maiores devem ser divididas em menores. Ao fazer isso, podemos garantir que as classes de implementação só precisam se preocupar com os métodos que são do seu interesse.
+
+## Exemplo de violação deste princípio
+
+```php
+interface IAves
+{
+    public function setLocation ($latitude, $longitude);
+    public function setLatitude ($latitude);
+    public function render ();
+}
+
+class Papagaio implements Aves
+{
+    public function setLocation ($latitude, $longitude)
+    {
+
+    }
+
+    public function setLatitude ($latitude)
+    {
+
+    }
+
+    public function render ()
+    {
+
+    }
+}
+
+class Pinguim implements Aves
+{
+    public function setLocation ($latitude, $longitude)
+    {
+
+    }
+
+    public function setLatitude ($latitude)
+    {
+        return 0;
+    }
+
+    public function render ()
+    {
+
+    }
+}
+```
+
+Um Pinguim não possui Altitude, é um tipo de Ave que nao voa, então nesse caso o **setAltitude()** vai estar sempre um valor fixo, ele nao vai ser utilizado, a altitude sempre será a mesma, pois ele estará no chão.
+
+## Abordagem correta
+
+> Uma abordagem correta seria, criar a interface Aves e estendê-la para interfaces mais específicas.
+
+```php
+interface IAves
+{
+    public function setLocation ($latitude, $longitude);
+    public function render ();
+}
+
+interface IAvesQueVoam extends IAves
+{
+    public function setLatitude ($latitude);
+}
+
+class Papagaio implements IAvesQueVoam
+{
+    public function setLocation ($latitude, $longitude)
+    {
+
+    }
+
+    public function setLatitude ($latitude)
+    {
+
+    }
+
+    public function render ()
+    {
+
+    }
+}
+
+class Pinguim implements IAves
+{
+    public function setLocation ($latitude, $longitude)
+    {
+
+    }
+
+    public function render ()
+    {
+
+    }
+}
+```
+
+No exemplo acima criamos interfaces onde realmente usaremos apenas o necessário em quem implementa-las, assim não deixando nenhum método lá de bobeira e sim apenas os itens que VÃO ser realmente utilizados nas classes que os implementarem.
