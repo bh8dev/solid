@@ -276,11 +276,11 @@ class Pinguim implements IAves
 }
 ```
 
-Um Pinguim não possui Altitude, é um tipo de Ave que nao voa, então nesse caso o **setAltitude()** vai estar sempre um valor fixo, ele nao vai ser utilizado, a altitude sempre será a mesma, pois ele estará no chão.
+Um Pinguim não possui Latitude, é um tipo de Ave que nao voa, então nesse caso o **setLatitude()** vai estar sempre um valor fixo, ele nao vai ser utilizado, a latitude sempre será a mesma, pois ele sempre estará no chão.
 
 ## Abordagem correta
 
-> Uma abordagem correta seria, criar a interface Aves e estendê-la para interfaces mais específicas.
+> Uma abordagem correta seria, criar a interface IAves e estendê-la para interfaces mais específicas.
 
 ```php
 interface IAves
