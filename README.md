@@ -327,3 +327,136 @@ class Pinguim implements IAves
 ```
 
 No exemplo acima criamos interfaces onde realmente usaremos apenas o necessário em quem implementa-las, assim não deixando nenhum método lá de bobeira e sim apenas os itens que VÃO ser realmente utilizados nas classes que os implementarem.
+
+## D
+
+> O conceito diz que “Módulos de alto nível não devem depender de módulos de baixo nível. Ambos devem depender de abstrações. Abstrações não devem depender de detalhes. Detalhes devem depender de abstrações”.
+
+Em resumo, o princípio diz que, quando se está realizando uma injeção de dependência, e essa dependência que está sendo injetada, pode ser modificada, o ideal é que se crie uma interface, para então as classes que forem utilizar essa dependência, utilizem da mesma interface.
+
+## Exemplo de violação do princípio
+
+```php
+class MySql
+{
+    public function connect ()
+    {
+        
+    }
+}
+
+class UsuarioDao
+{
+
+    private $connection;
+
+    public function __construct ()
+    {
+        $this->connection = new MySql();
+    }
+}
+```
+
+O problema ao realizar uma implementação deste tipo, é que, o **UsuarioDao** fica totalmente dependente da instanciação de uma nova classe no construtor.
+Toda vez que for realizar uma instância de **UsuarioDao**, será criada uma nova conexão. O que não seria correto. Teríamos várias conexões distinitas.
+
+> Uma abordagem para realizar tal correção seria com INJEÇÃO DE DEPENDÊNCIA
+
+Então receberíamos a instância no construtor.
+
+```php
+class MySql
+{
+    public function connect ()
+    {
+        
+    }
+}
+
+class UsuarioDao
+{
+
+    private $database;
+
+    public function __construct (Mysql $connection)
+    {
+        $this->database = $connection->connect();
+    }
+}
+
+// instancia a conexao
+$databaseConnection = new Mysql();
+
+// passa a conexao pro UsuarioDao
+$daoUser = new UsuarioDao($databaseConnection);
+
+// aqui tambem seria a mesma conexao e nao uma distinta
+$daoUser2 = new UsuarioDao($databaseConnection);
+```
+
+> Mas isso não seria uma INVERSÃO de dependência, que é o que diz o princípio, e sim, uma INJEÇÃO de dependência.
+
+Dessa forma abaixo, por exemplo, a classe **UsuarioDao** pouco irá se importar com quem está sendo injetado dentro dela.
+
+## Exemplo seguindo o princípio
+
+```php
+interface IDatabaseConnection
+{
+    public function connect ();
+}
+
+class MySql implements IDatabaseConnection
+{
+    public function connect ()
+    {
+        
+    }
+}
+
+class Oracle implements IDatabaseConnection
+{
+    public function connect ()
+    {
+        
+    }
+}
+
+class UsuarioDao
+{
+
+    private $database;
+
+    public function __construct (IDatabaseConnection $connection)
+    {
+        $this->database = $connection->connect();
+    }
+}
+
+// instancia conexao
+$databaseConnection = new Mysql();
+
+// passa a conexao pro Usuario
+$daoUser = new UsuarioDao($databaseConnection);
+
+// aqui tambem seria a mesma conexao e nao uma distinta
+$daoUser2 = new UsuarioDao($databaseConnection);
+```
+
+Deste modo, a classe **UsuarioDao**, simplesmente quer saber se estamos injetando uma dependência que USA a interface **IDatabaseConnection**.
+
+> Na implementação, a única coisa que mudaríamos seria a instância da conexão.
+
+```php
+$databaseConnection = new Mysql();
+
+// ou
+
+$databaseConnection = new Oracle();
+
+// etc
+
+// aqui funcionaria normalmente :D
+$daoUser = new UsuarioDao($databaseConnection);
+$daoUser2 = new UsuarioDao($databaseConnection);
+```
